@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <size
+                android:width="70dp"
+                android:height="70dp" />
+            <gradient
+                android:angle="270"
+                android:endColor="#dd6612"
+                android:gradientRadius="35dp"
+                android:startColor="#fdb44d"
+                android:type="linear" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/fire" />
+</layer-list>
