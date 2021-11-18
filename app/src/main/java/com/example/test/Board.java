@@ -1,5 +1,6 @@
 package com.example.test;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.AttributeSet;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 
 public class Board extends LinearLayout {
 
-    int player;
+    int player = 1;
     final Size BOARD_SIZE = new Size(8, 12);
     Tile[][] boardMatrix = new Tile[BOARD_SIZE.getHeight()][BOARD_SIZE.getWidth()];
     Tile selectedTile = null;
@@ -28,8 +29,6 @@ public class Board extends LinearLayout {
 
     public Board(Context context) {
         super(context);
-
-        player = 1;
 
         setOrientation(VERTICAL);
         setLayoutParams(
@@ -71,12 +70,12 @@ public class Board extends LinearLayout {
                                     if (result == 0) {
                                         selectedTile.removeSoldier();
                                         boardMatrix[finalI][finalJ].removeSoldier();
-                                        player = player == 1 ? 2 : 1;
+                                        changePlayer(context);
                                     } else if (result == 1) {
                                         moveSoldier(selectedTile, boardMatrix[finalI][finalJ]);
                                     } else if (result == 2) {
                                         selectedTile.removeSoldier();
-                                        player = player == 1 ? 2 : 1;
+                                        changePlayer(context);
                                     }
                                     selectedTile = null;
                                 }
@@ -84,7 +83,7 @@ public class Board extends LinearLayout {
                                 selectedTile.deselect();
                                 moveSoldier(selectedTile, boardMatrix[finalI][finalJ]);
                                 selectedTile = null;
-                                player = player == 1 ? 2 : 1;
+                                changePlayer(context);
                             }
                         }
                     } else {
@@ -100,6 +99,9 @@ public class Board extends LinearLayout {
         }
         ArrayList<Soldier> soldiers = readSoldiersFromFile(new File(context.getExternalFilesDir(null).toString(), "soldiers_positions2"));
         locateSoldiersOnBoard(soldiers);
+
+        player = 2;
+        changePlayer();
     }
 
     ArrayList<Soldier> readSoldiersFromFile(File file) {
@@ -180,5 +182,36 @@ public class Board extends LinearLayout {
         toNewTile.setSoldier(soldier);
     }
 
+    void changePlayer(Context context) {
+        for (int i = 0; i < BOARD_SIZE.getHeight(); i++) {
+            for (int j = 0; j < BOARD_SIZE.getWidth(); j++) {
+                if (boardMatrix[i][j].hasSoldier()) boardMatrix[i][j].setHidden(true);
+            }
+        }
+        Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.turn_dialog);
+        dialog.setTitle("Turn Ended");
+        dialog.setCancelable(false);
+        dialog.findViewById(R.id.ok).setOnClickListener((View view) -> {
+            dialog.cancel();
+            player = player == 1 ? 2 : 1;
+            for (int i = 0; i < BOARD_SIZE.getHeight(); i++) {
+                for (int j = 0; j < BOARD_SIZE.getWidth(); j++) {
+                    if (boardMatrix[i][j].hasSoldier())
+                        boardMatrix[i][j].setHidden(boardMatrix[i][j].getSoldier().getTeamNumber() != player);
+                }
+            }
+        });
+        dialog.show();
+    }
 
+    void changePlayer() {
+        player = player == 1 ? 2 : 1;
+        for (int i = 0; i < BOARD_SIZE.getHeight(); i++) {
+            for (int j = 0; j < BOARD_SIZE.getWidth(); j++) {
+                if (boardMatrix[i][j].hasSoldier())
+                    boardMatrix[i][j].setHidden(boardMatrix[i][j].getSoldier().getTeamNumber() != player);
+            }
+        }
+    }
 }

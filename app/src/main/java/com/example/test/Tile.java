@@ -77,4 +77,25 @@ public class Tile extends AppCompatImageView {
     public Soldier getSoldier() {
         return soldier;
     }
+
+    public void setHidden(Boolean isHidden) {
+        if (isHidden) {
+            setImageResource(R.drawable.shield_circle);
+        } else {
+            switch (soldier.getType()) {
+                case 'A':
+                    setImageResource(R.drawable.air_circle);
+                    break;
+                case 'F':
+                    setImageResource(R.drawable.fire_circle);
+                    break;
+                case 'W':
+                    setImageResource(R.drawable.water_cirlce);
+                    break;
+                case 'E':
+                    setImageResource(R.drawable.earth_circle);
+                    break;
+            }
+        }
+    }
 }
